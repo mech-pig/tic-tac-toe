@@ -1,0 +1,53 @@
+[tool.poetry]
+name = "tic-tac-toe"
+version = "0.1.0"
+description = ""
+authors = ["mechpig <7295856+mech-pig@users.noreply.github.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.73.0"
+gunicorn = "^20.0.4"
+pydantic = "^1.9"
+uvicorn = { extras = ["standard"], version = "^0.17.4" }
+
+[tool.poetry.dev-dependencies]
+black = "^22.1.0"
+factory-boy = "^3.2.1"
+flake8 = "^4.0.1"
+flake8-todos = "^0.1.5"
+isort = "^5.9.3"
+mypy = "^0.931"
+pytest = "^6.2.5"
+pytest-cov = "^3.0.0"
+pytest-describe = "^2.0.0"
+pytest-mock = "^3.6.1"
+pytest-randomly = "^3.10.1"
+requests = "^2.27.1"
+
+[tool.black]
+line-length = 88
+target-version = ["py310"]
+
+[tool.isort]
+profile = "black"
+skip_gitignore = true
+src_paths = ["src", "test"]
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = """
+    -rf
+    -vv
+    --strict-config
+    --strict-markers
+    --doctest-modules
+    --maxfail=2
+    --cov src
+    --cov-report term-missing
+"""
+xfail_strict = true
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
