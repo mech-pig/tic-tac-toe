@@ -1,6 +1,14 @@
 import random
 
 import pytest
+from tests.fixtures import (
+    DRAW,
+    PLAYER_ONE_NEED_TO_MOVE,
+    PLAYER_ONE_NEED_TO_START,
+    PLAYER_TWO_NEED_TO_MOVE,
+    PLAYER_TWO_NEED_TO_START,
+    PLAYER_TWO_WIN,
+)
 
 from tic_tac_toe.domain.data import (
     WINNING_CELL_COMBINATIONS,
@@ -13,66 +21,6 @@ from tic_tac_toe.domain.data import (
     Mark,
     Player,
     PlayerCantMove,
-)
-
-DRAW = GameOver(
-    status="OVER",
-    winner=None,
-    marks={
-        Cell.TOP_LEFT: Player.TWO,
-        Cell.TOP_CENTER: Player.ONE,
-        Cell.TOP_RIGHT: Player.TWO,
-        Cell.CENTER_LEFT: Player.ONE,
-        Cell.CENTER_CENTER: Player.ONE,
-        Cell.CENTER_RIGHT: Player.TWO,
-        Cell.BOTTOM_LEFT: Player.TWO,
-        Cell.BOTTOM_CENTER: Player.TWO,
-        Cell.BOTTOM_RIGHT: Player.ONE,
-    },
-)
-
-PLAYER_ONE_WIN = GameOver(
-    status="OVER",
-    winner=Player.ONE,
-    marks={
-        Cell.TOP_LEFT: Player.TWO,
-        Cell.TOP_CENTER: Player.ONE,
-        Cell.TOP_RIGHT: Player.TWO,
-        Cell.CENTER_LEFT: Player.ONE,
-        Cell.CENTER_CENTER: Player.TWO,
-        Cell.BOTTOM_LEFT: Player.TWO,
-        Cell.CENTER_RIGHT: Player.ONE,
-    },
-)
-
-PLAYER_ONE_NEED_TO_START = GameOngoing(
-    status="ONGOING",
-    next_player=Player.ONE,
-    marks={},
-)
-
-PLAYER_TWO_NEED_TO_START = GameOngoing(
-    status="ONGOING",
-    next_player=Player.TWO,
-    marks={},
-)
-
-PLAYER_ONE_NEED_TO_MOVE = GameOngoing(
-    status="ONGOING",
-    next_player=Player.ONE,
-    marks={
-        Cell.TOP_LEFT: Player.TWO,
-        Cell.TOP_CENTER: Player.ONE,
-    },
-)
-
-PLAYER_TWO_NEED_TO_MOVE = GameOngoing(
-    status="ONGOING",
-    next_player=Player.TWO,
-    marks={
-        Cell.TOP_LEFT: Player.TWO,
-        Cell.TOP_CENTER: Player.ONE,
-    },
 )
 
 
@@ -91,32 +39,32 @@ def describe_add_mark():
                 id="draw, player chooses cell marked by other player",
             ),
             pytest.param(
-                PLAYER_ONE_WIN,
-                Mark(player=Player.ONE, cell=Cell.TOP_CENTER),
+                PLAYER_TWO_WIN,
+                Mark(player=Player.TWO, cell=Cell.TOP_LEFT),
                 id="winner chooses cell marked by herself",
             ),
             pytest.param(
-                PLAYER_ONE_WIN,
-                Mark(player=Player.ONE, cell=Cell.TOP_LEFT),
+                PLAYER_TWO_WIN,
+                Mark(player=Player.TWO, cell=Cell.TOP_CENTER),
                 id="winner chooses cell marked by other player",
             ),
             pytest.param(
-                PLAYER_ONE_WIN,
-                Mark(player=Player.ONE, cell=Cell.BOTTOM_CENTER),
+                PLAYER_TWO_WIN,
+                Mark(player=Player.TWO, cell=Cell.BOTTOM_CENTER),
                 id="winner chooses free cell",
             ),
             pytest.param(
-                PLAYER_ONE_WIN,
+                PLAYER_TWO_WIN,
                 Mark(player=Player.ONE, cell=Cell.TOP_LEFT),
                 id="loser chooses cell marked by herself",
             ),
             pytest.param(
-                PLAYER_ONE_WIN,
+                PLAYER_TWO_WIN,
                 Mark(player=Player.ONE, cell=Cell.TOP_CENTER),
                 id="loser chooses cell marked by other player",
             ),
             pytest.param(
-                PLAYER_ONE_WIN,
+                PLAYER_TWO_WIN,
                 Mark(player=Player.ONE, cell=Cell.BOTTOM_CENTER),
                 id="loser chooses free cell",
             ),
