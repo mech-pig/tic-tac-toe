@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Annotated, Literal, Mapping, Optional
+from typing import Annotated, Any, Literal, Mapping, Optional, TypeGuard
 
 from pydantic import BaseModel, Field
 
@@ -58,6 +58,12 @@ Game = Annotated[
     GameOngoing | GameOver,
     Field(discriminator="status"),
 ]
+
+
+def is_game(value: Any) -> TypeGuard[Game]:
+    # isinstance(value, Game) does not work
+    # https://github.com/python/mypy/issues/11673 is merged
+    return isinstance(value, GameOngoing | GameOver)
 
 
 class CellAlreadyMarked(BaseModel):

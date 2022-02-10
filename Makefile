@@ -5,7 +5,7 @@ PYTEST_ARGS = src tests
 
 .PHONY: dev
 dev:
-	$(ENV_VARS) poetry run gunicorn --reload "tic_tac_toe.entrypoints.asgi:create_app()"
+	$(ENV_VARS) poetry run gunicorn --reload "tic_tac_toe.__main__:asgi()"
 
 .PHONY: install-dev
 install-dev:
