@@ -1,10 +1,16 @@
 import os
-from typing import Mapping
+from typing import Callable, Mapping, Optional
 from uuid import uuid4
 
 import pytest
+from fastapi.encoders import jsonable_encoder
 from fastapi.testclient import TestClient
-from tests.fixtures import DRAW, PLAYER_ONE_NEED_TO_START
+from tests.fixtures import (
+    DRAW,
+    PLAYER_ONE_NEED_TO_MOVE,
+    PLAYER_ONE_NEED_TO_START,
+    PLAYER_TWO_WIN,
+)
 
 from tic_tac_toe.adapters.repository.postgres import (
     PostgresGameRepository,
@@ -17,7 +23,13 @@ from tic_tac_toe.entrypoints.asgi import create_asgi_app
 
 @pytest.fixture
 def make_client():
-    async def build(games: Mapping[str, Game]):
+    async def build(
+        games: Optional[Mapping[str, Game]] = None,
+        generate_game_id: Optional[Callable[[], str]] = None,
+    ):
+        games = games or {}
+        generate_game_id = generate_game_id or (lambda: uuid4().hex)
+
         repository = PostgresGameRepository(
             config=PostgresGameRepositoryConfig(
                 db_uri=os.environ.get("TEST_POSTGRES_REPOSITORY_DB_URI"),
@@ -25,11 +37,69 @@ def make_client():
         )
         for game_id, game in games.items():
             await repository.insert(game_id=game_id, game=game)
-        application = Application(repository=repository)
+
+        application = Application(
+            repository=repository,
+            generate_game_id=generate_game_id,
+        )
         asgi_app = create_asgi_app(application=application)
         return TestClient(asgi_app)
 
     return build
+
+
+def describe_new_game():
+    async def test_created_game_is_returned(make_client):
+        game_id = uuid4().hex
+        client = await make_client(generate_game_id=lambda: game_id)
+        response = client.post("/games")
+        expected = {
+            "id": game_id,
+            "state": {
+                "status": "ONGOING",
+                "next_player": Player.ONE.value,
+                "marks": {},
+            },
+        }
+        assert response.status_code == 201
+        assert response.json() == expected
+
+    async def test_created_game_is_persisted(make_client):
+        client = await make_client()
+        response = client.post("/games")
+        assert response.status_code == 201
+
+        expected = response.json()
+        get_response = client.get(f"/games/{expected['id']}")
+        assert get_response.status_code == 200
+        assert get_response.json() == expected
+
+
+def describe_get_game():
+    @pytest.mark.parametrize(
+        "game",
+        [
+            pytest.param(PLAYER_ONE_NEED_TO_START, id="new game"),
+            pytest.param(PLAYER_ONE_NEED_TO_MOVE, id="ongoing game"),
+            pytest.param(PLAYER_TWO_WIN, id="game over (win)"),
+            pytest.param(DRAW, id="game over (draw)"),
+        ],
+    )
+    async def test_game_is_returned(game, make_client):
+        game_id = uuid4().hex
+        expected = {"id": game_id, "state": jsonable_encoder(game)}
+        client = await make_client(games={game_id: game})
+        response = client.get(f"/games/{game_id}")
+        assert response.status_code == 200
+        assert response.json() == expected
+
+    async def test_game_is_not_found(make_client):
+        game_id = "i-dont-exist"
+        expected = {"error": "GAME_NOT_FOUND"}
+        client = await make_client(games={})
+        response = client.get(f"/games/{game_id}")
+        assert response.status_code == 404
+        assert response.json() == expected
 
 
 def describe_add_mark():
@@ -179,7 +249,7 @@ def describe_add_mark():
                         Cell.BOTTOM_RIGHT.value: Player.ONE.value,
                     },
                 },
-                id="draw",
+                id="game over (draw)",
             ),
             pytest.param(
                 GameOngoing(
@@ -211,7 +281,7 @@ def describe_add_mark():
                         Cell.BOTTOM_LEFT.value: Player.TWO.value,
                     },
                 },
-                id="win",
+                id="game over (win)",
             ),
         ],
     )

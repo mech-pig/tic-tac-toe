@@ -33,6 +33,29 @@ class PostgresGameRepository(GameRepository):
                     {"id": game_id, "state": Jsonb(game)},
                 )
 
+    async def get(self, game_id: str) -> Game | GameNotFound:
+        async with await AsyncConnection.connect(self.db_uri) as conn:
+            async with conn.cursor() as cursor:
+                await cursor.execute(
+                    """
+                        SELECT state FROM game
+                        WHERE id = %(id)s
+                        """,
+                    {"id": game_id},
+                )
+                row = await cursor.fetchone()
+                if row is None:
+                    return GameNotFound(error="GAME_NOT_FOUND")
+
+                game_data = row[0]
+
+                game: Game = (
+                    GameOngoing(**game_data)
+                    if game_data["status"] == "ONGOING"
+                    else GameOver(**game_data)
+                )
+                return game
+
     async def update(
         self,
         game_id: str,
