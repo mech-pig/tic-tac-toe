@@ -11,6 +11,7 @@ in
   pkgs.mkShell {
     buildInputs = [
       pkgs.dbeaver
+      pkgs.jq
       pkgs.poetry
       pkgs.python310
     ];
