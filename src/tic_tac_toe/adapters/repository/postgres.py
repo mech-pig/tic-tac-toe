@@ -90,6 +90,6 @@ class PostgresGameRepository(GameRepository):
                         SET state = %(state)s
                         WHERE id = %(id)s
                         """,
-                        {"id": game_id, "state": Jsonb(game)},
+                        {"id": game_id, "state": Jsonb(result)},
                     )
                 return result

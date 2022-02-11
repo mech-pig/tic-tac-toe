@@ -292,3 +292,7 @@ def describe_add_mark():
         response = client.post(f"/games/{game_id}/mark", json=body)
         assert response.status_code == 200
         assert response.json() == expected
+
+        get_game_response = client.get(f"/games/{game_id}")
+        assert get_game_response.status_code == 200
+        assert get_game_response.json() == expected
