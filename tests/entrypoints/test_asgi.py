@@ -189,7 +189,7 @@ def describe_add_mark():
         assert response.json() == expected
 
     @pytest.mark.parametrize(
-        "game, body, expected",
+        "game, body, expected_state",
         [
             pytest.param(
                 GameOngoing(
@@ -285,8 +285,9 @@ def describe_add_mark():
             ),
         ],
     )
-    async def test_success(game, body, expected, make_client):
+    async def test_success(game, body, expected_state, make_client):
         game_id = uuid4().hex
+        expected = {"id": game_id, "state": expected_state}
         client = await make_client(games={game_id: game})
         response = client.post(f"/games/{game_id}/mark", json=body)
         assert response.status_code == 200

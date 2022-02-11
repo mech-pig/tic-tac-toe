@@ -2,7 +2,7 @@ from typing import Callable, Literal, Protocol
 
 from pydantic import BaseModel
 
-from .data import AddMarkCommand, CreateNewGameCommand, Game, GameError, Mark
+from .data import AddMarkCommand, CreateNewGameCommand, Game, GameError, Mark, is_game
 
 
 class GameNotFound(BaseModel):
@@ -55,8 +55,12 @@ class Application:
         self,
         game_id: str,
         mark: Mark,
-    ) -> Game | GameError | GameNotFound:
-        return await self.repository.update(
+    ) -> GameAggregate | GameError | GameNotFound:
+        result = await self.repository.update(
             game_id=game_id,
             fn=AddMarkCommand(mark=mark),
         )
+        if is_game(result):
+            return GameAggregate(id=game_id, state=result)
+        # type narrowing does not seem to work
+        return result  # type: ignore
