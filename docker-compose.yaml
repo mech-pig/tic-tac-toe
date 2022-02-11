@@ -1,0 +1,19 @@
+version: "3"
+
+services:
+  postgres:
+    image: postgres:14-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DATABASE}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+  
+  postgres-migrations:
+    image: sqitch/sqitch:1.0.0
+    volumes:
+      - ./sqitch.conf:/repo/sqitch.conf
+      - ./migrations:/repo/migrations
+    environment:
+      SQITCH_TARGET: db:postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DATABASE}

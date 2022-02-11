@@ -10,6 +10,7 @@ fastapi = "^0.73.0"
 gunicorn = "^20.0.4"
 pydantic = "^1.9"
 uvicorn = { extras = ["standard"], version = "^0.17.4" }
+psycopg = { extras = ["binary"], version = "^3.0.8" }
 
 [tool.poetry.dev-dependencies]
 black = "^22.1.0"
@@ -24,6 +25,7 @@ pytest-describe = "^2.0.0"
 pytest-mock = "^3.6.1"
 pytest-randomly = "^3.10.1"
 requests = "^2.27.1"
+pytest-asyncio = "^0.18.1"
 
 [tool.black]
 line-length = 88
@@ -47,6 +49,7 @@ addopts = """
     --cov-report term-missing
 """
 xfail_strict = true
+asyncio_mode = "auto"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

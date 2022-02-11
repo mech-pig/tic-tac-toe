@@ -1,7 +1,15 @@
+import os
+from typing import Mapping
+from uuid import uuid4
+
 import pytest
 from fastapi.testclient import TestClient
 from tests.fixtures import DRAW, PLAYER_ONE_NEED_TO_START
 
+from tic_tac_toe.adapters.repository.postgres import (
+    PostgresGameRepository,
+    PostgresGameRepositoryConfig,
+)
 from tic_tac_toe.domain.application import Application
 from tic_tac_toe.domain.data import Cell, Game, GameOngoing, Player
 from tic_tac_toe.entrypoints.asgi import create_asgi_app
@@ -9,8 +17,15 @@ from tic_tac_toe.entrypoints.asgi import create_asgi_app
 
 @pytest.fixture
 def make_client():
-    def build(game: Game):
-        application = Application(game=game)
+    async def build(games: Mapping[str, Game]):
+        repository = PostgresGameRepository(
+            config=PostgresGameRepositoryConfig(
+                db_uri=os.environ.get("TEST_POSTGRES_REPOSITORY_DB_URI"),
+            )
+        )
+        for game_id, game in games.items():
+            await repository.insert(game_id=game_id, game=game)
+        application = Application(repository=repository)
         asgi_app = create_asgi_app(application=application)
         return TestClient(asgi_app)
 
@@ -84,9 +99,23 @@ def describe_add_mark():
             ),
         ],
     )
-    def test_domain_error(game, body, expected, make_client):
-        response = make_client(game=game).post("/games/test/mark", json=body)
+    async def test_domain_error(game, body, expected, make_client):
+        game_id = uuid4().hex
+        client = await make_client(games={game_id: game})
+        response = client.post(f"/games/{game_id}/mark", json=body)
         assert response.status_code == 400
+        assert response.json() == expected
+
+    async def test_game_not_found(make_client):
+        client = await make_client(games={})
+        game_id = "i-dont-exist"
+        body = {
+            "cell": Cell.BOTTOM_CENTER.value,
+            "player": Player.ONE.value,
+        }
+        expected = {"error": "GAME_NOT_FOUND"}
+        response = client.post(f"/games/{game_id}/mark", json=body)
+        assert response.status_code == 404
         assert response.json() == expected
 
     @pytest.mark.parametrize(
@@ -186,7 +215,9 @@ def describe_add_mark():
             ),
         ],
     )
-    def test_success(game, body, expected, make_client):
-        response = make_client(game=game).post("/games/test/mark", json=body)
+    async def test_success(game, body, expected, make_client):
+        game_id = uuid4().hex
+        client = await make_client(games={game_id: game})
+        response = client.post(f"/games/{game_id}/mark", json=body)
         assert response.status_code == 200
         assert response.json() == expected

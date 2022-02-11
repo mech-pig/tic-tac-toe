@@ -10,6 +10,7 @@ let
 in
   pkgs.mkShell {
     buildInputs = [
+      pkgs.dbeaver
       pkgs.poetry
       pkgs.python310
     ];
