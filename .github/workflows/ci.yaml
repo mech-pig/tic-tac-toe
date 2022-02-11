@@ -33,5 +33,14 @@ jobs:
       - name: Run static analysis checks
         run: make check
 
+      - name: Start context
+        run: make ctx-up
+
+      - name: Wait for pg to be ready
+        run: sleep '5'
+
+      - name: Perform migrations
+        run: make ctx-migrations-deploy
+
       - name: Run tests
         run: make test

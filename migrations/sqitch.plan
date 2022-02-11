@@ -1,0 +1,4 @@
+%syntax-version=1.0.0
+%project=tic-tac-toe
+
+0001_add_game_table 2022-02-10T20:51:55Z mechpig <mechpig@nixos> # Add game table
