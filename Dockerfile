@@ -38,4 +38,4 @@ EXPOSE 8080
 
 ENV HTTP_PORT=8080
 
-ENTRYPOINT [ "poetry", "run", "gunicorn", "tictactoe.entrypoints.asgi:create_app()" ]
+ENTRYPOINT [ "poetry", "run", "gunicorn", "tic_tac_toe.__main__:asgi()" ]

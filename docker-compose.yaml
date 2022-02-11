@@ -9,7 +9,7 @@ services:
       POSTGRES_DB: ${POSTGRES_DATABASE}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-  
+
   postgres-migrations:
     image: sqitch/sqitch:1.0.0
     volumes:
@@ -17,3 +17,7 @@ services:
       - ./migrations:/repo/migrations
     environment:
       SQITCH_TARGET: db:postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DATABASE}
+
+networks:
+  default:
+    name: ${DOCKER_COMPOSE_NETWORK}
