@@ -86,6 +86,15 @@ GameError = Annotated[
 ]
 
 
+class CreateNewGameCommand(BaseModel):
+    def __call__(self) -> Game:
+        return GameOngoing(
+            status="ONGOING",
+            next_player=Player.ONE,
+            marks={},
+        )
+
+
 class AddMarkCommand(BaseModel):
     mark: Mark
 
