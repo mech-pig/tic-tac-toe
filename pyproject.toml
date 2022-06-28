@@ -13,7 +13,7 @@ uvicorn = { extras = ["standard"], version = "^0.18.2" }
 psycopg = { extras = ["binary"], version = "^3.0.15" }
 
 [tool.poetry.dev-dependencies]
-black = "^22.3.0"
+black = "^22.6.0"
 flake8 = "^4.0.1"
 flake8-todos = "^0.1.5"
 isort = "^5.9.3"
