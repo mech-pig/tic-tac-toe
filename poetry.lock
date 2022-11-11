@@ -146,11 +146,11 @@ pyflakes = ">=2.5.0,<2.6.0"
 
 [[package]]
 name = "flake8-todos"
-version = "0.1.5"
-description = "None"
+version = "0.2.0"
+description = "Python linter to check TODO comments for consistency and best practice."
 category = "dev"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.8"
 
 [package.dependencies]
 flake8 = "*"
@@ -611,7 +611,7 @@ python-versions = ">=3.7"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "25fbb6fdb6caa952b5cc51e4bb608fb2d2b0aa059b41de2d95edfbb23ff197be"
+content-hash = "d6846b91ddbd5c3f913d3da4f35f3643ddeb1005441699af538c26b5b9078a3a"
 
 [metadata.files]
 anyio = [
@@ -726,8 +726,8 @@ flake8 = [
     {file = "flake8-5.0.4.tar.gz", hash = "sha256:6fbe320aad8d6b95cec8b8e47bc933004678dc63095be98528b7bdd2a9f510db"},
 ]
 flake8-todos = [
-    {file = "flake8-todos-0.1.5.tar.gz", hash = "sha256:8541033429e7d0c3271104bfd5f74bfa81e07b76b0667cf8b2cd830419638e0d"},
-    {file = "flake8_todos-0.1.5-py3-none-any.whl", hash = "sha256:19a37b521caedb00619c357279d8dc05807ea7a1c02f15cd0475752efc96f9a1"},
+    {file = "flake8-todos-0.2.0.tar.gz", hash = "sha256:75561e972e8f85b85014f9e8e0b4ba3788c59a396f5c26685c6eaa9aafbc6b65"},
+    {file = "flake8_todos-0.2.0-py3-none-any.whl", hash = "sha256:5b8fe20655b00ae66622ef51f651070bc3303b8335f84060fd4765fa942a321d"},
 ]
 gunicorn = [
     {file = "gunicorn-20.1.0-py3-none-any.whl", hash = "sha256:9dcc4547dbb1cb284accfb15ab5667a0e5d1881cc443e0677b4882a4067a807e"},
